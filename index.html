@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Car Rental System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f6fa;
+      color: #2f3640;
+    }
+    header {
+      background: #273c75;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+    nav {
+      background: #40739e;
+      padding: 10px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+    }
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .container {
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      box-shadow: 0px 3px 6px rgba(0,0,0,0.1);
+    }
+    button {
+      background: #44bd32;
+      border: none;
+      padding: 10px 15px;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #218c74;
+    }
+    section {
+      display: none;
+    }
+    section.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Car Rental System</h1>
+    <p>Rent your car with ease</p>
+  </header>
+
+  <nav>
+    <a onclick="showPage('home')">Home</a>
+    <a onclick="showPage('cars')">Available Cars</a>
+    <a onclick="showPage('booking')">Book Now</a>
+    <a onclick="showPage('myBookings')">My Bookings</a>
+  </nav>
+
+  <!-- Home -->
+  <section id="home" class="container active">
+    <h2>Welcome to our Car Rental Service</h2>
+    <p>Choose your car, book it easily, and enjoy your ride!</p>
+  </section>
+
+  <!-- Available Cars -->
+  <section id="cars" class="container">
+    <h2>Available Cars</h2>
+    <div class="card">
+      <h3>Honda Civic</h3>
+      <p>Price: ₹1500/day</p>
+      <button onclick="prefillBooking('Honda Civic')">Book Now</button>
+    </div>
+    <div class="card">
+      <h3>Hyundai Creta</h3>
+      <p>Price: ₹2000/day</p>
+      <button onclick="prefillBooking('Hyundai Creta')">Book Now</button>
+    </div>
+    <div class="card">
+      <h3>Maruti Swift</h3>
+      <p>Price: ₹1200/day</p>
+      <button onclick="prefillBooking('Maruti Swift')">Book Now</button>
+    </div>
+  </section>
+
+  <!-- Booking -->
+  <section id="booking" class="container">
+    <h2>Book Your Car</h2>
+    <form onsubmit="saveBooking(event)">
+      <label>Your Name:</label><br>
+      <input type="text" id="name" required><br><br>
+
+      <label>Select Car:</label><br>
+      <select id="car" required>
+        <option value="">--Choose a Car--</option>
+        <option value="Honda Civic">Honda Civic</option>
+        <option value="Hyundai Creta">Hyundai Creta</option>
+        <option value="Maruti Swift">Maruti Swift</option>
+      </select><br><br>
+
+      <label>Date:</label><br>
+      <input type="date" id="date" required><br><br>
+
+      <button type="submit">Confirm Booking</button>
+    </form>
+  </section>
+
+  <!-- My Bookings -->
+  <section id="myBookings" class="container">
+    <h2>My Bookings</h2>
+    <div id="bookingsList"></div>
+  </section>
+
+  <script>
+    // Page Navigation
+    function showPage(pageId) {
+      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(pageId).classList.add("active");
+
+      if (pageId === "myBookings") {
+        loadBookings();
+      }
+    }
+
+    // Pre-fill booking form when clicking "Book Now" from cars
+    function prefillBooking(carName) {
+      showPage("booking");
+      document.getElementById("car").value = carName;
+    }
+
+    // Save booking in localStorage
+    function saveBooking(event) {
+      event.preventDefault();
+      const name = document.getElementById("name").value;
+      const car = document.getElementById("car").value;
+      const date = document.getElementById("date").value;
+
+      let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+      bookings.push({name, car, date});
+      localStorage.setItem("bookings", JSON.stringify(bookings));
+
+      alert("Booking Confirmed!");
+      showPage("myBookings");
+      loadBookings();
+    }
+
+    // Load bookings in My Bookings
+    function loadBookings() {
+      let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+      let container = document.getElementById("bookingsList");
+      container.innerHTML = "";
+
+      if (bookings.length === 0) {
+        container.innerHTML = "<p>No bookings yet!</p>";
+      } else {
+        bookings.forEach(b => {
+          container.innerHTML += `
+            <div class="card">
+              <h3>${b.car}</h3>
+              <p>Booked by: ${b.name}</p>
+              <p>Date: ${b.date}</p>
+            </div>
+          `;
+        });
+      }
+    }
+  </script>
+</body>
+</html>
